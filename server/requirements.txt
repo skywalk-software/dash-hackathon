@@ -1,0 +1,4 @@
+# Use a fresh Python 3.12 environment on a CUDA Linux host.
+qwen-asr[vllm]==0.0.6
+fastapi>=0.115,<1
+uvicorn>=0.34,<1

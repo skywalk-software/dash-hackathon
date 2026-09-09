@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360">
+<rect width="1200" height="360" rx="24" fill="#102326"/>
+<circle cx="1090" cy="70" r="240" fill="#193a3d"/>
+<path d="M840 160v40m32-70v100m32-135v170m32-105v40m32-65v90m32-115v140m32-105v70" stroke="#bcef90" stroke-width="12" stroke-linecap="round"/>
+<text x="64" y="82" font-family="ui-monospace,monospace" font-size="16" letter-spacing="4" fill="#bcef90">A VOICE EDITOR YOU CAN HACK</text>
+<text x="60" y="195" font-family="system-ui,sans-serif" font-weight="750" font-size="104" fill="#f4f1e7">dash</text>
+<text x="66" y="253" font-family="system-ui,sans-serif" font-size="27" fill="#e4e4d8">Speak. Point. Keep writing.</text>
+<text x="66" y="312" font-family="ui-monospace,monospace" font-size="15" fill="#9cbbb7">macOS  /  Qwen3  /  vLLM  /  Automerge</text>
+</svg>

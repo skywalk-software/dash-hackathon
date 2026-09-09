@@ -1,0 +1,63 @@
+name: DashHackathon
+options:
+  minimumXcodeGenVersion: 2.45.0
+packages:
+  EditorInteractionKit:
+    path: Packages/EditorInteractionKit
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_IDENTITY: "-"
+targets:
+  DashHackathon:
+    type: application
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources: [App]
+    dependencies:
+      - package: EditorInteractionKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.dashhackathon.editor
+        ENABLE_HARDENED_RUNTIME: YES
+    entitlements:
+      path: Config/Dash.entitlements
+      properties:
+        com.apple.security.device.audio-input: true
+    info:
+      path: Config/Info.plist
+      properties:
+        CFBundleDisplayName: Dash
+        CFBundleName: Dash
+        NSMicrophoneUsageDescription: Record spoken editing requests while you point and select text.
+        NSPrincipalClass: NSApplication
+        LSApplicationCategoryType: public.app-category.productivity
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Text document
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [public.plain-text]
+  DashHackathonTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources: [tests/AppTests]
+    dependencies:
+      - target: DashHackathon
+      - package: EditorInteractionKit
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  DashHackathon:
+    build:
+      targets:
+        DashHackathon: all
+    run:
+      config: Debug
+    test:
+      targets: [DashHackathonTests]

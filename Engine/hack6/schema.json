@@ -1,0 +1,126 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tasks",
+    "needs_input"
+  ],
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operation",
+          "instruction",
+          "context",
+          "references",
+          "working_area"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string",
+            "enum": [
+              "edit",
+              "question"
+            ]
+          },
+          "instruction": {
+            "type": "string"
+          },
+          "context": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "paragraph",
+                "quote",
+                "selection_id"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "paragraph": {
+                  "type": "string"
+                },
+                "quote": {
+                  "type": "string"
+                },
+                "selection_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "working_area": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "paragraph",
+                  "quote",
+                  "selection_id"
+                ],
+                "properties": {
+                  "paragraph": {
+                    "type": "string"
+                  },
+                  "quote": {
+                    "type": "string"
+                  },
+                  "selection_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "needs_input": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "message"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wait",
+              "clarify",
+              "asr_error"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

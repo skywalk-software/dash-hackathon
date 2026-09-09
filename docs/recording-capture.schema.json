@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Cursor recording capture v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "recordingID",
+    "startedAt",
+    "originMonotonicNs",
+    "clock",
+    "timestampUnit",
+    "coordinateBase",
+    "columnUnit",
+    "rangeEndConvention",
+    "status",
+    "documents",
+    "events"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "recordingID": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "originMonotonicNs": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "clock": {
+      "const": "macOS_uptime_monotonic"
+    },
+    "timestampUnit": {
+      "const": "milliseconds"
+    },
+    "coordinateBase": {
+      "const": 1
+    },
+    "columnUnit": {
+      "const": "unicode_scalar_tab_counts_one"
+    },
+    "rangeEndConvention": {
+      "const": "exclusive"
+    },
+    "status": {
+      "enum": [
+        "recording",
+        "stopped",
+        "cancelled"
+      ]
+    },
+    "endTimestampMs": {
+      "type": "number",
+      "minimum": 0
+    },
+    "documents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/document"
+      }
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "position": {
+      "type": "object",
+      "required": [
+        "line",
+        "column",
+        "utf16Offset"
+      ],
+      "properties": {
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "column": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "utf16Offset": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "textRange": {
+      "type": "object",
+      "required": [
+        "location",
+        "length"
+      ],
+      "properties": {
+        "location": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "cursorRange": {
+      "type": "object",
+      "required": [
+        "start",
+        "end",
+        "utf16Range",
+        "selectedText"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/position"
+        },
+        "end": {
+          "$ref": "#/$defs/position"
+        },
+        "utf16Range": {
+          "$ref": "#/$defs/textRange"
+        },
+        "selectedText": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cursorSnapshot": {
+      "type": "object",
+      "required": [
+        "documentID",
+        "documentRevision",
+        "ranges"
+      ],
+      "properties": {
+        "documentID": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "documentRevision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ranges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cursorRange"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "event": {
+      "type": "object",
+      "required": [
+        "id",
+        "sequence",
+        "timestampMs",
+        "kind",
+        "source",
+        "before",
+        "after"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timestampMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "kind": {
+          "enum": [
+            "recording_started",
+            "cursor_moved",
+            "selection_changed",
+            "document_edited",
+            "cursor_action",
+            "recording_stopped",
+            "recording_cancelled"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "actionID": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "before": {
+          "$ref": "#/$defs/cursorSnapshot"
+        },
+        "after": {
+          "$ref": "#/$defs/cursorSnapshot"
+        }
+      },
+      "additionalProperties": false
+    },
+    "document": {
+      "type": "object",
+      "required": [
+        "documentID",
+        "revision",
+        "text"
+      ],
+      "properties": {
+        "documentID": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
