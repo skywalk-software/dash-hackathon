@@ -79,7 +79,7 @@ struct RecordingAssistantBubble: View {
             HStack(spacing: 8) {
                 Image(systemName: "waveform").frame(width: 16, height: 16)
                     .frame(width: 24, height: 24).background(EditorTheme.cyan, in: Circle())
-                Text("DASH · RECORDING \(number)").font(EditorTheme.font(9, mono: true)).tracking(0.5)
+                Text("ASTRA · RECORDING \(number)").font(EditorTheme.font(9, mono: true)).tracking(0.5)
                 Spacer(minLength: 4)
                 if !jobs.isEmpty {
                     Text("\(completedCount) of \(jobs.count) complete").font(EditorTheme.font(11, mono: true))

@@ -8,8 +8,8 @@ import os from 'node:os';
 import path from 'node:path';
 
 test('interpretation errors are attributed to their recording and reset clears old results', async () => {
-  const env = {...process.env, DASH_LLM_BASE_URL: 'http://127.0.0.1:1/v1'};
-  delete env.DASH_LLM_API_KEY;
+  const env = {...process.env, OPENAI_BASE_URL: 'http://127.0.0.1:1/v1'};
+  delete env.OPENAI_API_KEY;
   delete env.EDITOR_EVIDENCE_DIR;
   const child = spawn(process.execPath, [fileURLToPath(new URL('./worker.mjs', import.meta.url))], {env, stdio: ['pipe', 'pipe', 'pipe']});
   const reader = readline.createInterface({input: child.stdout});
@@ -34,7 +34,7 @@ test('interpretation errors are attributed to their recording and reset clears o
     }
     assert.equal(state.interpretations[0].recordingID, 'recording-test');
     assert.equal(state.interpretations[0].status, 'failed');
-    assert.match(state.interpretations[0].error, /fetch failed/);
+    assert.match(state.interpretations[0].error, /OPENAI_API_KEY/);
     await send({op: 'init', text: 'Fresh document.'});
     state = await send({op: 'poll'});
     assert.deepEqual(state.interpretations, []);

@@ -179,7 +179,7 @@ struct EditorView: View {
         HStack(spacing: 16) {
             Text("dash").font(.system(size: 32, weight: .bold, design: .rounded))
                 .accessibilityLabel("Dash")
-            Text(voice.isMock ? "EDITOR / MOCK" : "EDITOR")
+            Text(voice.isMock ? "ASTRA / MOCK" : "GPT-6 ASTRA")
                 .font(EditorTheme.font(9, mono: true)).tracking(1).foregroundStyle(EditorTheme.navy)
                 .padding(.trailing, 36)
             Button("Open…", action: openInCurrentWindow)

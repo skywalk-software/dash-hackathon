@@ -11,8 +11,8 @@ struct DeviceSettingsView: View {
                 Button("Allow microphone access") { Task { await voice.connect() } }
                     .disabled(voice.state.isBusy)
             }
-            Section("Speech & timing") {
-                Text("Qwen3-ASR transcribes after Stop. Qwen3-ForcedAligner provides word times for matching speech to your selections.")
+            Section("Powered by GPT-6 Astra") {
+                Text("Astra understands your spoken requests, proposes edits, and reconciles them with your latest text. A separate speech service supplies the transcript and word times.")
                 Text(ProcessInfo.processInfo.environment["DASH_ASR_URL"] ?? "http://127.0.0.1:8001")
                     .font(.system(.caption, design: .monospaced)).textSelection(.enabled)
                 Text("Start the speech service and launch with scripts/run.py. Audio goes to your configured service; recordings and full document revisions remain on this Mac until you delete them.")

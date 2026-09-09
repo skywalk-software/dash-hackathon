@@ -1,104 +1,101 @@
-<p align="center"><img src="docs/banner.svg" alt="Dash — Speak. Point. Keep writing." width="100%"></p>
+<p align="center"><img src="docs/banner.svg" alt="Dash — an editor powered by GPT-6 Astra. Speak. Point. Keep writing." width="100%"></p>
 
 <p align="center">
-  <strong>A small native editor for spoken edits and pointed-at text.</strong><br>
-  Built for a hackathon. Easy to read, change, and make your own.
+  <strong>Built with GPT-6 Astra. Powered by GPT-6 Astra.</strong><br>
+  Speak an edit. Point at what you mean. Keep typing while Astra works.
 </p>
 
 <p align="center">
+  <img alt="GPT-6 Astra" src="https://img.shields.io/badge/powered%20by-GPT--6%20Astra-bcef90?labelColor=102326">
   <img alt="macOS 14+" src="https://img.shields.io/badge/macOS-14%2B-102326">
-  <img alt="Qwen3 + vLLM" src="https://img.shields.io/badge/inference-Qwen3%20%2B%20vLLM-bcef90?labelColor=102326">
   <img alt="MIT license" src="https://img.shields.io/badge/license-MIT-bcef90?labelColor=102326">
-  <img alt="Prototype" src="https://img.shields.io/badge/status-hackathon%20starter-f4f1e7?labelColor=102326">
+  <img alt="Hackathon prototype" src="https://img.shields.io/badge/status-hackathon%20prototype-f4f1e7?labelColor=102326">
 </p>
 
 ## The idea
 
-Press **Start recording**, speak an edit, and select the passage you mean. Stop recording and Dash sends your microphone audio for transcription and word timing. The editor matches those words with your cursor/selection history, generates edits, and reconciles them with anything you typed meanwhile.
+Most AI editors make you select text, write a prompt, and wait. Dash explores a more fluid interaction: talk and point while staying in the document.
 
-> “Make this paragraph shorter. And turn these details into a list.”
+> “Make this paragraph shorter. Turn these details into a list. Keep the delivery date I just changed.”
 
-Normal Mac microphone. Your own model services. Plain text all the way down.
+**GPT-6 Astra is the editing intelligence.** It interprets the spoken request together with timestamped selections, generates scoped proposals, and reconciles those proposals against the latest document. You can continue typing while the model works.
 
-## What’s here
+Built for the **GPT-6 Astra Hackathon SF**: a native, inspectable prototype of human–AI collaboration inside an editor.
 
-- **Native macOS editor** — open/save text files, selection tracking, conversation history, and before/after inspection.
-- **Microphone capture** — default system input, permission prompt, local PCM WAV recording, and playback.
-- **Qwen3 speech pipeline** — Qwen3-ASR on vLLM plus Qwen3-ForcedAligner for word timestamps.
-- **Qwen3 editing** — a configurable vLLM chat endpoint handles interpretation, generation, and reconciliation.
-- **Automerge state** — scoped edits, revision checks, and cancellation guards preserve concurrent typing.
+### Astra built it. Astra runs it.
 
-**Starter status:** the code is wired together, but the microphone → GPU → final-edit flow has not been validated end to end. Expect setup friction and imperfect model results. The editor can open and edit files without the model services. Speech requests fail visibly when the service is unavailable; there are no fabricated transcripts or timestamps in the normal microphone flow.
+**In development:** the entire project was developed with GPT-6 Astra. We used it to prototype and iterate the GUI, refine complex prompts with latency and accuracy as goals, and exercise the interface through computer use to reduce manual testing. Astra helped us move through the design → implementation → test → refinement loop.
 
-## Quick start · Mac
+**In the product:** Astra understands complex, multimodal user intent expressed through speech, pointing, and text selection. It resolves references like “this paragraph” in context, generates and refines text, and reconciles those changes with your ongoing typing. The app converts speech into a transcript and word times, then sends those alongside timestamped pointer/selection events and document context to Astra.
 
-You need macOS 14+, Xcode, XcodeGen, and Node 22+.
+
+## Where Astra does the work
+
+| Stage | Astra’s role |
+|---|---|
+| **Understand “this”** | Combine the transcript, word times, document context, and pointer events to resolve what each request refers to. |
+| **Work on several edits** | Generate independent proposals concurrently for the requested passages. |
+| **Keep up with you** | Reconcile each proposal against newer typing and already-accepted edits. |
+| **Make changes inspectable** | Return text and structured decisions; the app validates scope and revisions before applying changes and displaying before/after snippets. |
+
+All three reasoning stages use **`gpt-6-astra` through the OpenAI Responses API**, with structured outputs for interpretation and reconciliation. The local scheduler coordinates concurrent requests; Automerge tracks document revisions and enforces commit boundaries.
+
+A supporting speech service supplies transcription and timing. The core experiment is how Astra uses that context to collaborate with a person who is still editing. “Multimodal” describes the combined user interactions; this client passes their text/event representation to Astra, not raw microphone audio or screen pixels.
+
+**Prototype status:** the native editor builds and offline checks run. The full microphone → speech service → Astra → final-edit flow has not been validated end to end. Model access and an OpenAI API key are required. See [the demo outline and contribution boundaries](docs/HACKATHON.md).
+
+## Try it · Mac
+
+Requires macOS 14+, Xcode, XcodeGen, Node 22+, and an OpenAI API key with GPT-6 Astra access.
 
 ```sh
 brew install xcodegen node
 npm ci --prefix Engine --ignore-scripts
 cp .env.example .env.local
+```
+
+Add your `OPENAI_API_KEY` to `.env.local`, then:
+
+```sh
 ./scripts/build.sh
 python3 scripts/run.py
 ```
 
-Use the launcher to load `.env.local` and start the local editing helper. Direct Xcode Run opens the editor, but does not load that configuration or automatically start the helper.
+The launcher loads your local settings and starts the editing helper. Direct Xcode Run opens the editor but does not load `.env.local` or automatically start the helper. No credentials are bundled in the app.
 
-Choose your default microphone in **System Settings → Sound → Input**. On first recording, allow microphone access. Keep requests under two minutes. Start the GPU services below to enable transcription and generated edits.
+1. Start the [supporting speech service](docs/SPEECH.md) and point `DASH_ASR_URL` at it.
+2. Open some disposable sample text. Allow microphone access on first recording.
+3. Press **Start recording**, speak a short instruction, and select what you mean.
+4. Press **Stop recording**. Continue typing while Astra works, then inspect the resulting changes.
 
-## Model services · CUDA Linux
+Use your Mac’s default microphone; choose a different input in System Settings → Sound. Keep recordings under two minutes. Without model services, Dash still opens and edits plain-text files and reports unavailable inference explicitly.
 
-The Mac is the UI/client. vLLM runs on a CUDA Linux host; this starter does not install a GPU stack on macOS.
+## Why this is an Astra project
 
-**1. Speech and word timing** — use a fresh Python 3.12 environment:
+The interesting behavior is contextual reference resolution and reconciliation with a changing document. A transcript alone does not tell an editor which “this” you meant, and a generated rewrite can be stale by the time it arrives. Dash gives Astra the interaction history and current document, then checks its proposed changes before committing them.
 
-```sh
-python3.12 -m venv .venv
-source .venv/bin/activate
-pip install -r server/requirements.txt
-python server/app.py
-```
+Today this uses independent Responses API calls and an application-managed scheduler. **Astra async tool calling and WebSocket mid-turn steering are future experiments, not implemented features.** See [the roadmap](docs/ROADMAP.md) for how those could extend this interaction.
 
-This loads `Qwen/Qwen3-ASR-1.7B` through the official `qwen-asr` vLLM backend and `Qwen/Qwen3-ForcedAligner-0.6B` for alignment. The wrapper exposes `/health` and `/transcribe` on loopback port **8001**. Model weights download on first start. See [speech setup](docs/SPEECH.md).
-
-**2. Text editing** — in a separate compatible vLLM environment/GPU allocation:
-
-```sh
-vllm serve Qwen/Qwen3-8B --host 127.0.0.1 --port 8000 \
-  --max-model-len 16384 --gpu-memory-utilization 0.4
-```
-
-Memory requirements depend on GPU, context length, and other resident models. These are starting settings, not a validated single-GPU deployment. Use separate GPUs or adjust memory allocations if both services cannot fit.
-
-**3. Forward to your Mac:**
-
-```sh
-ssh -N -L 8000:127.0.0.1:8000 -L 8001:127.0.0.1:8001 YOUR_GPU_HOST
-```
-
-The defaults in `.env.example` now point at both services. Restart the Mac app after changing settings. Remote URLs must use HTTPS; HTTP is accepted only for loopback.
-
-## Make it yours
+## Build on it
 
 | Area | Start here |
 |---|---|
-| Microphone and speech client | [`App/MicrophoneCaptureService.swift`](App/MicrophoneCaptureService.swift) |
-| Editor and conversation UI | [`App/EditorView.swift`](App/EditorView.swift) |
-| Speech server | [`server/app.py`](server/app.py) |
-| Model endpoint and settings | [`Engine/model_client.mjs`](Engine/model_client.mjs) |
-| Interpretation prompt | [`Engine/hack6/interpret.txt`](Engine/hack6/interpret.txt) |
-| Generation and reconciliation prompts | [`Engine/hack8/`](Engine/hack8/) |
-| Cursor/recording data types | [`Packages/EditorInteractionKit/`](Packages/EditorInteractionKit/) |
+| Astra API integration | [`Engine/model_client.mjs`](Engine/model_client.mjs) |
+| Interpreting speech + selections | [`Engine/hack6/interpret.txt`](Engine/hack6/interpret.txt) |
+| Generation and reconciliation | [`Engine/hack8/`](Engine/hack8/) |
+| Concurrent jobs and cancellation | [`Engine/scheduler.mjs`](Engine/scheduler.mjs) |
+| Native editing and conversation UI | [`App/EditorView.swift`](App/EditorView.swift) |
+| Microphone adapter | [`App/MicrophoneCaptureService.swift`](App/MicrophoneCaptureService.swift) |
 
-Read the [architecture](docs/ARCHITECTURE.md), [contribution notes](CONTRIBUTING.md), and [next steps](docs/ROADMAP.md).
+[Architecture](docs/ARCHITECTURE.md) · [Demo & contribution notes](docs/HACKATHON.md) · [Contributing](CONTRIBUTING.md) · [Speech setup](docs/SPEECH.md)
 
 ## Data and limitations
 
-Audio is sent only after Stop to your configured speech service. Document text and editing instructions are sent to your configured text model. This wrapper holds audio in memory for inference; the model runtime may have its own logging configuration.
+Document text, transcripts, selections, and editing instructions are sent to OpenAI for Astra requests. Audio is sent to your configured speech service. Requests use `store: false`; this is an API setting, not a blanket data-retention guarantee. Refer to the [OpenAI data controls](https://developers.openai.com/api/docs/guides/your-data). API calls consume your credits.
 
-The Mac retains recordings and capture packages in `~/Library/Application Support/DashHackathon/`. Packages include **whole document revisions**, not just selected text. Restart clears the UI, not saved files. Delete those directories yourself when finished; review exports before sharing. Optional diagnostic export also contains document/model content.
+The Mac retains recordings and full document revisions in `~/Library/Application Support/DashHackathon/`. Restart clears the UI, not saved files. Delete those directories yourself when finished, and review exports before sharing. Optional diagnostics also contain document/model content.
 
-Word times are aligned to the recorded audio. Mapping audio start to the cursor clock uses the recorder-start time and is approximate. There is no live streaming transcription, calibrated input latency, packaged Node helper, automatic server installer, or production distribution/notarization flow yet. Small models may reject or misinterpret complex edits; use disposable sample text while experimenting.
+Input latency is approximate, and semantic interpretation can be wrong. There is no streaming speech, packaged Node helper, automatic server installer, or production/notarized distribution yet. Use sample text while experimenting.
 
 ## Checks
 
@@ -109,10 +106,10 @@ python3 -m unittest discover -s server -p 'test_*.py'
 python3 scripts/check-public.py
 ```
 
-CI builds the Mac app and runs offline checks. It does not download models or claim a live microphone/GPU test.
+CI builds the Mac app and runs offline checks. It does not call Astra, download speech models, or claim a live end-to-end test.
 
 ## License & credits
 
 MIT. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-Built with [Automerge](https://automerge.org/), [Qwen3-ASR](https://github.com/QwenLM/Qwen3-ASR), and [vLLM](https://github.com/vllm-project/vllm). Models and dependencies retain their own licenses. Model weights are not included in this repository.
+Powered by [GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra), with [Automerge](https://automerge.org/) for document state. Speech dependencies and their setup are documented separately. Model weights are not included. This is a participant project, not an official OpenAI product.

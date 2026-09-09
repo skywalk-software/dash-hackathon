@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test worker_protocol.test.mjs presentation.test.mjs change_history.test.mjs engine.test.mjs hack6/test.mjs hack8/store.test.mjs && node hack7/test_scheduler.mjs"
+    "test": "node --test model_client.test.mjs worker_protocol.test.mjs presentation.test.mjs change_history.test.mjs engine.test.mjs hack6/test.mjs hack8/store.test.mjs && node hack7/test_scheduler.mjs"
   },
   "dependencies": {
     "@automerge/automerge": "3.4.1"

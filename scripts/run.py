@@ -12,7 +12,7 @@ if config.exists():
         if not line.strip() or line.lstrip().startswith('#'):
             continue
         name, separator, value = line.partition('=')
-        if separator and name.strip().startswith(('DASH_', 'EDITOR_')):
+        if separator and name.strip().startswith(('DASH_', 'EDITOR_', 'OPENAI_')):
             env.setdefault(name.strip(), value.strip().strip('"\''))
 node = shutil.which('node')
 if not node:
